@@ -1,0 +1,1 @@
+echo 'This was built with gem-to-deb (/home/tom.oconnor/bin/gem-to-deb fpm jordansissel 0.3.11), please use that instead.'
