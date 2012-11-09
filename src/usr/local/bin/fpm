@@ -1,0 +1,4 @@
+FPM_VERSION=0.4.21
+
+GEM_HOME=/opt/oss/fpm/$FPM_VERSION \
+/opt/oss/fpm/$FPM_VERSION/bin/fpm "$@"

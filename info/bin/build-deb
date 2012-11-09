@@ -23,6 +23,10 @@ gem install \
 # Use fpm to package fpm ~~> mind-blown.
 SRC_DIRS=$(ls -m src/|sed 's/,/ /g')
 
+# set current version in wrapper
+sed -i "s/^FPM_VERSION=.*$/FPM_VERSION=${PACKAGE_VERS}/g" src/usr/local/bin/fpm
+sed -i "s/^FPM_VERSION=.*$/FPM_VERSION=${PACKAGE_VERS}/g" src/usr/local/bin/fpm-npm
+
 export GEM_HOME=$PWD/src/opt/oss/fpm/$PACKAGE_VERS
 
 $PWD/src/opt/oss/fpm/${PACKAGE_VERS}/bin/fpm -n ${PACKAGE_NAME} \
@@ -37,6 +41,6 @@ $PWD/src/opt/oss/fpm/${PACKAGE_VERS}/bin/fpm -n ${PACKAGE_NAME} \
    --replaces "$PACKAGE_NAME (<< $PACKAGE_VERS)" ${SRC_DIRS}
 
 
-echo `expr ${PACKAGE_BUILD_VERSION} + 1` > info/BUILD_VERSION
+echo `expr ${BUILD_NUMBER} + 1` > info/BUILD_VERSION
 
 exit ${PIPESTATUS[0]}
