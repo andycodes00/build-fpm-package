@@ -1,66 +1,41 @@
 #!/usr/bin/env bash
+set -o verbose
+
 if [ ! -d info ];then
     echo "You are not inside an Application or Application-wrapper directory"
     exit 1
 fi
 
-if [ -f ~/bin/build-deb ]; then
-    echo "You still have an old version of build-deb in your ~/bin. Please delete it"
-fi
-
-MY_CHECKSUM=$(md5sum ${0} |cut -f1 -d' ')
-LOCAL_CHECKSUM=$(md5sum info/bin/build-deb |cut -f1 -d' ')
-
-if [[ $MY_CHECKSUM != $LOCAL_CHECKSUM ]]; then
-    echo "Local build script differs from Master, using that instead."
-    bash info/bin/build-deb
-    exit $?
-fi
-
-if [ ! -f info/BUILD_VERSION ]; then
-    # I _think_ this is how Jenkins is going to function
-    if [ "$BUILD_VERSION" == "" ]; then
-        echo "BUILD_VERSION:"
-        read BUILD_VERSION
-    else
-        echo "building version $BUILD_VERSION"
-    fi
-fi
-
+BUILD_NUMBER=`cat info/BUILD_VERSION`
 PACKAGE_NAME=`cat info/NAME`
 PACKAGE_DESC=`cat info/DESCRIPTION`
 PACKAGE_URL=`cat info/URL`
 PACKAGE_VERS=`cat info/VERSION`
-PACKAGE_DEPENDS=`dpkg-deb -f rubygem-fpm_${PACKAGE_VERS}_all.deb Depends`
+PACKAGE_DEPENDS=`cat info/DEPENDS`
 
-if [[ $PACKAGE_NAME == *wrapper* ]]; then
-    PACKAGE_ARCH=`cat info/ARCH`
-else
-    PACKAGE_ARCH=`uname -m`
-fi
-PACKAGE_TARGET_PLATFORM=$( cat /etc/lsb-release |grep DISTRIB_CODENAME|cut -d'=' -f2)
+# Download GEMS into src directory
+gem install \
+   --no-ri \
+   --no-rdoc \
+   --install-dir src/opt/oss/fpm/${PACKAGE_VERS}/ \
+   fpm
 
-#Jenkins uses build_number we use version..
-if [ -z "$BUILD_NUMBER" ]
-then
-    PACKAGE_BUILD_VERSION=`cat info/BUILD_VERSION`
-else
-    PACKAGE_BUILD_VERSION=$BUILD_NUMBER
-fi
-
+# Use fpm to package fpm ~~> mind-blown.
 SRC_DIRS=$(ls -m src/|sed 's/,/ /g')
 
-/usr/lib/ruby/gems/1.8/gems/fpm-0.3.11/bin/fpm -n $PACKAGE_NAME \
+export GEM_HOME=$PWD/src/opt/oss/fpm/$PACKAGE_VERS
+
+$PWD/src/opt/oss/fpm/${PACKAGE_VERS}/bin/fpm -n ${PACKAGE_NAME} \
    -v $PACKAGE_VERS \
-   -a $PACKAGE_ARCH \
    -s dir \
    -C src \
    -t deb \
+   --verbose \
    --url "$PACKAGE_URL" \
    --description "$PACKAGE_DESC" \
-   --iteration "baseblack-r$PACKAGE_BUILD_VERSION" \
-   --depends "${PACKAGE_DEPENDS}, rubygem-fpm (= $PACKAGE_VERS)" \
+   --iteration "baseblack-r$BUILD_NUMBER" \
    --replaces "$PACKAGE_NAME (<< $PACKAGE_VERS)" ${SRC_DIRS}
+
 
 echo `expr ${PACKAGE_BUILD_VERSION} + 1` > info/BUILD_VERSION
 

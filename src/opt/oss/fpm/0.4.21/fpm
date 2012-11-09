@@ -1,6 +1,0 @@
-#!/usr/bin/env bash
-# FPM internal gem wrapper script.
-
-echo "FPM_VERSION is ${FPM_VERSION}"
-
-/usr/lib/ruby/gems/1.8/gems/fpm-${FPM_VERSION}/bin/fpm
