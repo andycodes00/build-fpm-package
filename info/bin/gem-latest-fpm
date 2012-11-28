@@ -1,0 +1,1 @@
+gem list --remote fpm | grep -v "fpm-cookery"

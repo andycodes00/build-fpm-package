@@ -20,6 +20,13 @@ gem install \
    --install-dir src/opt/oss/fpm/${PACKAGE_VERS}/ \
    fpm
 
+# Delete any old versions from the src tree
+for i in $(ls src/opt/oss/fpm); do
+    if [[ "$i" != *${PACKAGE_VERS}* ]]; then
+        rm -r src/opt/oss/fpm/${i}
+    fi
+done
+
 # Use fpm to package fpm ~~> mind-blown.
 SRC_DIRS=$(ls -m src/|sed 's/,/ /g')
 
