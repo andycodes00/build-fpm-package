@@ -1,0 +1,10 @@
+require "fpm/namespace"
+
+require "fpm/package"
+require "fpm/package/dir"
+require "fpm/package/gem"
+require "fpm/package/deb"
+require "fpm/package/rpm"
+require "fpm/package/tar"
+require "fpm/package/python"
+require "fpm/package/osxpkg"
