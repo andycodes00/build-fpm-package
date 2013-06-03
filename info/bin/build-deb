@@ -10,8 +10,10 @@ BUILD_NUMBER=`cat info/BUILD_VERSION`
 PACKAGE_NAME=`cat info/NAME`
 PACKAGE_DESC=`cat info/DESCRIPTION`
 PACKAGE_URL=`cat info/URL`
-PACKAGE_VERS=`cat info/VERSION`
-PACKAGE_DEPENDS=`cat info/DEPENDS`
+
+#PACKAGE_VERS=`cat info/VERSION`
+PACKAGE_VERS=$(info/bin/gem-latest-fpm)
+echo "Building package for fpm (${PACKAGE_VERSION})"
 
 # Download GEMS into src directory
 gem install \

@@ -1,1 +1,10 @@
-gem list --remote fpm | grep -v "fpm-cookery"
+#!/usr/bin/env bash
+
+set +o verbose
+
+# retrieves the latest version info for fpm from rubygems
+fpm_version_string=$(gem list --remote fpm | grep -v "fpm-cookery")
+
+# strips off the annoying text around it.
+fpm_trim_back=${fpm_version_string%?}
+echo ${fpm_trim_back#fpm (}
